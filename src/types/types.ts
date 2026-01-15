@@ -8,11 +8,20 @@ export const registerSchema = z.object({
 });
 
 export const loginSchema = z.object({
-  // We accept a string that could be a username OR an email
   identifier: z.string().min(1, "Username or Email is required"),
   password: z.string(),
 });
 
 export const createRoomSchema = z.object({
-  name: z.string(),
+  name: z.string().min(1, "Room name is required"), // Ensure name isn't empty
+  latitude: z.coerce.number()
+        .min(-90, "Latitude must be -90 or greater")
+        .max(90, "Latitude must be 90 or less"),
+
+  longitude: z.coerce.number()
+        .min(-180, "Longitude must be -180 or greater")
+        .max(180, "Longitude must be 180 or less")
 });
+
+
+
