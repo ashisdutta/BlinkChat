@@ -31,5 +31,5 @@ export const chatHandler = (io: Server, socket: Socket) => {
         console.error("Redis Error:", error);
         socket.emit("error", { message: "Message failed to queue" });
         }
-    });
+    })
 };
