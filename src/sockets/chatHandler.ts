@@ -24,6 +24,7 @@ export const chatHandler = (io: Server, socket: Socket) => {
       //Queue for Database: Push to Redis List
       await redis.rpush(CHAT_QUEUE_KEY, JSON.stringify(chatPayload));
 
+<<<<<<< HEAD
       console.log(`📨 Queued message for Room ${roomId}`);
     } catch (error) {
       console.error("Redis Error:", error);
@@ -31,3 +32,16 @@ export const chatHandler = (io: Server, socket: Socket) => {
     }
   });
 };
+=======
+        // 4. Queue for Database: Push to Redis List
+        await redis.rpush(CHAT_QUEUE_KEY, JSON.stringify(chatPayload));
+        
+        console.log(`📨 Queued message for Room ${roomId}`);
+        
+        } catch (error) {
+        console.error("Redis Error:", error);
+        socket.emit("error", { message: "Message failed to queue" });
+        }
+    })
+};
+>>>>>>> 06f03ad45dea5a3be480f0cd4ff3b97e7ee9debe
