@@ -300,3 +300,64 @@ export const allJoinedRooms = async (req: Request, res: Response) => {
     res.status(500).json({ error: "Unable to fetch joined rooms" });
   }
 };
+
+
+export const getRoomInfo = async (req: Request, res: Response) => {
+  const { roomId } = req.params;
+
+  try {
+    const room = await prisma.room.findUnique({
+      where: { id: roomId as string},
+      select: {
+        id: true,
+        name: true,
+        photo: true,
+        description: true, // <--- Add this (Ensure it exists in your Prisma Schema!)
+        ownerId: true,     // Useful to know if I can edit settings
+        createdAt: true,
+        members: {         // <--- Fetch actual members
+          select: {
+            id: true,
+            userName: true, // or 'name', whatever your User model has
+            email: true,
+            // photo: true  // if users have photos
+          }
+        },
+        _count: { select: { members: true } }
+      }
+    });
+
+    if (!room) return res.status(404).json({ message: "Room not found" });
+    res.json(room);
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching room" });
+  }
+};
+
+
+// leave room //
+export const leaveRoom = async (req: Request, res: Response) => {
+  const { roomId } = req.params;
+  const { userId } = req.user!;
+
+  try {
+    await prisma.room.update({
+      where: { 
+        id: roomId as string
+      },
+      data: {
+        members: {
+          disconnect: {
+            id: userId
+          }
+        }
+      }
+    });
+
+    return res.status(200).json({ message: "Successfully left the room" });
+
+  } catch (error) {
+    console.error("Leave Room Error:", error);
+    return res.status(500).json({ message: "Failed to leave room" });
+  }
+};
