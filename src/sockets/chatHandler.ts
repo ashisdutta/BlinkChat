@@ -7,13 +7,13 @@ export const chatHandler = (io: Server, socket: Socket) => {
   const authSocket = socket as AuthSocket;
 
   authSocket.on("send_message", async (data) => {
-    // 🛑 1. REMOVE userId/userName from the incoming data
+    //  REMOVE userId/userName from the incoming data
     const { roomId, message } = data;
 
-    // 🛑 2. GET USER FROM SECURE SOCKET DATA
+    //  GET USER FROM SECURE SOCKET DATA
     // The middleware ensures this exists
-    const currentUser = authSocket.data.user!; 
-    
+    const currentUser = authSocket.data.user!;
+
     const userId = currentUser.userId;
     const userName = currentUser.userName;
 
@@ -23,7 +23,7 @@ export const chatHandler = (io: Server, socket: Socket) => {
     const chatPayload = {
       text: message,
       roomId,
-      userId,   // Securely obtained
+      userId, // Securely obtained
       userName, // Securely obtained
       createdAt: new Date(timestamp).toISOString(),
     };

@@ -13,7 +13,7 @@ export const createRoom = async (req: Request, res: Response) => {
     });
   }
 
-  const { name, latitude, longitude, description } = req.body;
+  const { name, latitude, longitude, description, photo } = req.body;
   if (!req.user) {
     return res.json({
       message: "userId is not present",
@@ -34,6 +34,7 @@ export const createRoom = async (req: Request, res: Response) => {
         description,
         latitude: cleanLocation.latitude,
         longitude: cleanLocation.longitude,
+        photo: photo || null,
         ownerId: req.user.userId,
         members: {
           connect: {

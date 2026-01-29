@@ -19,7 +19,7 @@ export const register = async (req: Request, res: Response) => {
     });
   }
 
-  const { userName, password } = result.data;
+  const { userName, password, photo } = result.data;
 
   try {
     // READ VERIFICATION TOKEN FROM COOKIE
@@ -65,6 +65,7 @@ export const register = async (req: Request, res: Response) => {
         userName,
         password: hashedPassword,
         email: decodedEmail,
+        photo: photo || null,
       },
     });
 
@@ -93,12 +94,6 @@ export const register = async (req: Request, res: Response) => {
     return res.status(500).json({ message: "Internal Server Error" });
   }
 };
-
-
-
-
-
-
 
 // --- Login ---
 
@@ -152,12 +147,6 @@ export const login = async (req: Request, res: Response) => {
   }
 };
 
-
-
-
-
-
-
 // --- Logout ---
 export const logout = (req: Request, res: Response) => {
   res.clearCookie("auth_token", {
@@ -178,7 +167,7 @@ export const getMe = async (req: Request, res: Response) => {
   // If we reach here, the 'protect' middleware has already passed
   const user = await prisma.user.findUnique({
     where: { id: req.user?.userId },
-    select: { id: true, userName: true, email: true }, // Don't return password!
+    select: { id: true, userName: true, email: true },
   });
 
   if (!user) {

@@ -15,6 +15,7 @@
   "license": "ISC",
   "packageManager": "pnpm@10.20.0",
   "dependencies": {
+    "@imagekit/nodejs": "^7.2.2",
     "@prisma/adapter-pg": "^7.2.0",
     "@prisma/client": "^7.2.0",
     "bcryptjs": "^3.0.3",
@@ -24,17 +25,15 @@
     "express": "^5.2.1",
     "express-rate-limit": "^8.2.1",
     "geolib": "^3.3.4",
+    "imagekit": "^6.0.0",
     "ioredis": "^5.9.1",
     "jsonwebtoken": "^9.0.3",
     "nodemailer": "^7.0.12",
     "otp-generator": "^4.0.1",
     "pg": "^8.16.3",
-    "socket.io": "^4.8.3",
-    "zod": "^4.3.5"
+    "socket.io": "^4.8.3"
   },
   "devDependencies": {
-    "@types/bcryptjs": "^3.0.0",
-    "@types/cookie": "^1.0.0",
     "@types/cookie-parser": "^1.4.10",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
@@ -47,6 +46,7 @@
     "prisma": "^7.2.0",
     "ts-node": "^10.9.2",
     "tsx": "^4.21.0",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "zod": "^4.3.5"
   }
 }
