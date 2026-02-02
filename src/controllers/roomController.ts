@@ -341,7 +341,7 @@ export const getRoomInfo = async (req: Request, res: Response) => {
             id: true,
             userName: true,
             email: true,
-            photo: true,
+            photo: true
           },
         },
         _count: { select: { members: true } },
