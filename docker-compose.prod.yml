@@ -6,6 +6,8 @@ services:
       context: .
       dockerfile: Dockerfile.prod  # <--- Uses the optimized file
     container_name: chat-api
+    env_file:                # <--- ADD THIS
+      - .env
     restart: always                # <--- Auto-restarts if it crashes
     ports:
       - "80:4000"                  # <--- Opens Port 80 (standard web port)
@@ -25,6 +27,8 @@ services:
       context: .
       dockerfile: Dockerfile.prod
     container_name: chat-worker
+    env_file:                # <--- ADD THIS
+      - .env
     restart: always
     command: ["npm", "run", "start:worker"] # <--- Runs the worker script
     environment:
@@ -66,4 +70,4 @@ volumes:
 
 networks:
   chat-network:
-    driver: bridge
+    driver: bridg
