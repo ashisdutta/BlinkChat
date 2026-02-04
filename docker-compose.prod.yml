@@ -1,0 +1,69 @@
+version: "3.8"
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.prod  # <--- Uses the optimized file
+    container_name: chat-api
+    restart: always                # <--- Auto-restarts if it crashes
+    ports:
+      - "80:4000"                  # <--- Opens Port 80 (standard web port)
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=postgres://postgres:password@postgres:5432/chatdb
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - chat-network
+
+  worker:
+    build:
+      context: .
+      dockerfile: Dockerfile.prod
+    container_name: chat-worker
+    restart: always
+    command: ["npm", "run", "start:worker"] # <--- Runs the worker script
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=postgres://postgres:password@postgres:5432/chatdb
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    depends_on:
+      - redis
+    networks:
+      - chat-network
+
+  postgres:
+    image: postgres:15-alpine
+    container_name: postgres
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=chatdb
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - chat-network  # <--- No 'ports' section means it is HIDDEN from internet
+
+  redis:
+    image: redis:7-alpine
+    container_name: redis
+    restart: always
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - redis_data:/data
+    networks:
+      - chat-network
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  chat-network:
+    driver: bridge

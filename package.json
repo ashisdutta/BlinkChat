@@ -8,7 +8,9 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc",
     "dev": "npx prisma db push && tsx src/app.ts",
-    "worker": "tsx src/worker.ts"
+    "start": "node dist/app.js",
+    "worker": "tsx src/worker.ts",
+    "start:worker": "node dist/worker.js"
   },
   "keywords": [],
   "author": "",
