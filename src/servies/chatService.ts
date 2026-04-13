@@ -1,6 +1,5 @@
 import { redis, CACHE_TTL } from "../utils/redis.js";
 import prisma from "../utils/prisma.js";
-import { tr } from "zod/v4/locales";
 
 export const ChatService = {
   /**
@@ -14,7 +13,7 @@ export const ChatService = {
   ) {
     const key = `chat:room:${roomId}`;
 
-    // 1. Try to fetch from Redis first
+    // Try to fetch from Redis first
     let messages: any[] = [];
 
     // SCENARIO A: new memeber -> Get latest 100
@@ -69,23 +68,28 @@ export const ChatService = {
         await pipeline.exec();
       }
     }
-
-    return messages;
+    //Ensure no >2hr messages slip through from Redis
+    const twoHoursAgo = Date.now() - 2 * 60 * 60 * 1000;
+    return messages.filter(
+      (msg) => new Date(msg.createdAt).getTime() >= twoHoursAgo
+    );
   },
 
   /**
    * Helper: Fallback to Database if Redis is empty
    */
   async fetchFromDB(roomId: string, limit: number, cursor?: number) {
+    const twoHoursAgo = new Date(Date.now() - 2 * 60 * 60 * 1000);
+
     const msgs = await prisma.chat
       .findMany({
         where: {
           roomId,
-          ...(cursor
-            ? {
-                createdAt: { lt: new Date(cursor) }, // 'lt' = Less Than (Older)
-              }
-            : {}),
+          // APPLY FILTER: CreatedAt must be Greater Than or Equal (gte) to 2 hours ago
+          createdAt: {
+            gte: twoHoursAgo,
+            ...(cursor ? { lt: new Date(cursor) } : {}),
+          },
         },
         include: {
           user: {

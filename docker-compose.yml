@@ -1,56 +1,52 @@
 version: "3.8"
 
 services:
-  # API Service
   api:
     build:
       context: .
       dockerfile: Dockerfile.dev
-    container_name: chat-app-server
-    restart: always
+    container_name: chat-api-dev
     ports:
       - "4000:4000"
     environment:
       - NODE_ENV=development
-      - PORT=4000
       - DATABASE_URL=postgres://postgres:password@postgres:5432/chatdb
       - REDIS_HOST=redis
-      - REDIS_PORT=6379
+      # Load local secrets for Dev
+    env_file:
+      - .env
+    # VITAL FOR DEV: Syncs your folder to the container
     volumes:
       - .:/app
       - /app/node_modules
     depends_on:
       - postgres
       - redis
-    networks:
-      - chat-network
     command: ["pnpm", "run", "dev"]
 
-  # Worker Service
   worker:
     build:
       context: .
       dockerfile: Dockerfile.dev
-    container_name: chat-app-worker
-    restart: always
+    container_name: chat-worker-dev
     environment:
       - NODE_ENV=development
       - DATABASE_URL=postgres://postgres:password@postgres:5432/chatdb
       - REDIS_HOST=redis
-      - REDIS_PORT=6379
+    env_file:
+      - .env
+    # VITAL FOR DEV: Syncs your folder to the container
     volumes:
       - .:/app
       - /app/node_modules
     depends_on:
       - redis
       - postgres
-    networks:
-      - chat-network
     command: ["pnpm", "run", "worker"]
 
+  # Database services (Redis/Postgres) remain the same...
   postgres:
     image: postgres:15-alpine
-    container_name: postgres
     restart: always
     environment:
       - POSTGRES_USER=postgres
@@ -59,26 +55,15 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
-    networks:
-      - chat-network
+      - postgres_data_dev:/var/lib/postgresql/data
 
   redis:
     image: redis:7-alpine
-    container_name: redis
-    restart: always
-    command: ["redis-server", "--appendonly", "yes"]
     ports:
       - "6379:6379"
     volumes:
-      - redis_data:/data
-    networks:
-      - chat-network
+      - redis_data_dev:/data
 
 volumes:
-  postgres_data:
-  redis_data:
-
-networks:
-  chat-network:
-    driver: bridge
+  postgres_data_dev:
+  redis_data_dev:

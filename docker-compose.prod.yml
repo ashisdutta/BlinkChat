@@ -4,13 +4,16 @@ services:
   api:
     build:
       context: .
-      dockerfile: Dockerfile.prod  # <--- Uses the optimized file
+      dockerfile: Dockerfile.prod # <--- Uses the optimized file
     container_name: chat-api
     env_file:                # <--- ADD THIS
       - .env
     restart: always                # <--- Auto-restarts if it crashes
     ports:
-      - "80:4000"                  # <--- Opens Port 80 (standard web port)
+      - "4000:4000" # <--- Opens Port 80 (standard web port)
+
+    command: ["sh", "-c", "npx prisma migrate deploy && pnpm run start"]
+
     environment:
       - NODE_ENV=production
       - DATABASE_URL=postgres://postgres:password@postgres:5432/chatdb
@@ -52,7 +55,7 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
-      - chat-network  # <--- No 'ports' section means it is HIDDEN from internet
+      - chat-network # <--- No 'ports' section means it is HIDDEN from internet
 
   redis:
     image: redis:7-alpine

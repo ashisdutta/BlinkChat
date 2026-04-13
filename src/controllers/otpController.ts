@@ -107,8 +107,8 @@ export const verifyOtp = async (req: Request, res: Response) => {
   //  SET COOKIE
   res.cookie("verify_token", verificationToken, {
     httpOnly: true,
-    secure: false, // true in production
-    sameSite: "lax", // REQUIRED for localhost cross-port
+    secure: true, // true in production
+    sameSite: "none", // REQUIRED for localhost cross-port
     maxAge: 15 * 60 * 1000,
     path: "/",
   });

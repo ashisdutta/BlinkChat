@@ -1,15 +1,16 @@
 import express, { type Express } from "express";
 import { createServer } from "http"; // <--- Essential for Socket.io
-import { Server } from "socket.io";  // <--- Essential for Socket.io
+import { Server } from "socket.io"; // <--- Essential for Socket.io
 import mainRouter from "./routes/index.js";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import dotenv from "dotenv";
 import { initializeSockets } from "./sockets/socketHandler.js"; // <--- Your Socket Logic
-
+import { startCleanupService } from "./servies/cleanupService.js";
 dotenv.config();
 
 const app: Express = express();
+app.enable("trust proxy");
 const httpServer = createServer(app); // <--- Wrap Express in a raw Server
 
 const PORT = process.env.PORT || 4000;
@@ -19,8 +20,11 @@ app.use(cookieParser());
 
 // Define CORS once (Shared by both Express and Socket.io)
 const corsOptions = {
-  origin: "http://localhost:3000", // Your Frontend URL
-  credentials: true,               // Allow cookies
+  origin: [
+    "http://localhost:3000",
+    "https://blinkchat.eradev.xyz", // <--- The new frontend URL
+  ],
+  credentials: true, // Allow cookies
 };
 
 // Apply CORS to Express
@@ -36,6 +40,8 @@ initializeSockets(io);
 
 // Attach API Routes
 app.use("/api", mainRouter);
+
+startCleanupService(); // <--- Apply cleanup function
 
 // Health Check
 app.get("/", (req, res) => {

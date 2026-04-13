@@ -79,8 +79,8 @@ export const register = async (req: Request, res: Response) => {
     // ✅ SET AUTH COOKIE
     res.cookie("auth_token", token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: process.env.NODE_ENV === "production" ? "strict" : "lax",
+      secure: true,
+      sameSite: "none",
       maxAge: 7 * 24 * 60 * 60 * 1000,
       path: "/",
     });
@@ -131,8 +131,8 @@ export const login = async (req: Request, res: Response) => {
     // Set Secure Cookie
     res.cookie("auth_token", token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: process.env.NODE_ENV === "production" ? "strict" : "lax",
+      secure: true,
+      sameSite: "none",
       maxAge: 7 * 24 * 60 * 60 * 1000,
       path: "/", // Ensure cookie is accessible on all routes
     });
@@ -151,8 +151,8 @@ export const login = async (req: Request, res: Response) => {
 export const logout = (req: Request, res: Response) => {
   res.clearCookie("auth_token", {
     httpOnly: true,
-    secure: IS_PRODUCTION,
-    sameSite: IS_PRODUCTION ? "strict" : "lax",
+    secure: true,
+    sameSite: "none",
   });
   res.json({ message: "Logged out successfully" });
 };
@@ -178,32 +178,30 @@ export const getMe = async (req: Request, res: Response) => {
   res.json(user);
 };
 
-
-
 //update username data
 
-export const updateUser = async (req:Request, res:Response)=>{
-  const {userId} = req.user!;
-  const {userName, photo} = req.body;
+export const updateUser = async (req: Request, res: Response) => {
+  const { userId } = req.user!;
+  const { userName, photo } = req.body;
   try {
     const updated = await prisma.user.update({
-      where:{
-        id: userId as string
+      where: {
+        id: userId as string,
       },
-      data:{
+      data: {
         userName,
-        photo
-      }
-    })
+        photo,
+      },
+    });
 
-    if(updated){
+    if (updated) {
       return res.status(200).json({
-        msg: "update successful"
-      })
+        msg: "update successful",
+      });
     }
   } catch (error) {
     return res.status(500).json({
-      error
-    })
+      error,
+    });
   }
-}
+};

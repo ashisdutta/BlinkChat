@@ -12,7 +12,7 @@
     "esModuleInterop": true,
     "baseUrl": ".",
     "target": "esnext",
-    "types": [],
+    "types": ["node"],
     "typeRoots": ["./src/types", "./node_modules/@types"],
     // For nodejs:
     // "lib": ["esnext"],
