@@ -259,8 +259,8 @@ export const allJoinedRooms = async (req: Request, res: Response) => {
     const roomPromises = rooms.map(async (room, index) => {
       const [error, result] = redisResults![index] ?? [null, null];
 
-      let lastMessage = null;
-      let lastMessageTime = null;
+      let lastMessage: string | null = null;
+      let lastMessageTime: Date | string | null = null;
 
       // CHECK REDIS FIRST
       if (!error && Array.isArray(result) && result.length > 0) {
